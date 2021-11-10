@@ -2,7 +2,7 @@
 
 ## how to use
 
-1. "htmlprac.html" をブラウザで開く。
+1. "[index.html](index.html)" をブラウザで開く。
 
 ## license
 
