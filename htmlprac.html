@@ -30,13 +30,6 @@
             };
             f.readAsText(elmLoad.files[0]);
         }
-
-        function アップロードする(){
-            const host = prompt("SandboxサーバーのIPとポートを指定してください", "127.0.0.1:80");
-            if(host){
-                open(`http://${host}/`, "_blank");
-            }
-        }
     </script>
 </head>
 
@@ -46,7 +39,6 @@
             <button onclick="見てみる();" style="font-size:1.2em;">見てみる</button>
             <button onclick="SAVEする();" style="font-size:1.2em;">SAVEする<a id="elmSave"></a></button>
             <button onclick="elmLoad.click();" style="font-size:1.2em;">LOADする<input id="elmLoad" type="file" onchange="LOADする();" hidden></button>
-            <button onclick="アップロードする();" style="font-size:1.2em;">アップロードする</button>
         </div>
         <h1 style="font-size:1.5em;">
             Webプログラミング 道場
@@ -63,7 +55,6 @@
         <div style="float:right; ">
             v20211109 by <a href="https://github.com/code4fukui/htmlprac" target="_blank">Code for FUKUI</a>
         </div>
-        <a href="gijuserve.1.2.zip">[ "アップロードする"を試すためのSandboxサーバーを立てるにはこちら ]</a>
     </div>
 </body>
 
