@@ -2,6 +2,19 @@
 <html>
 
 <head>
+<style>
+@font-face {
+    font-family: "ichigojam";
+    font-style: normal;
+    font-weight: 400;
+    src: local('IchigoJam-1.4'), local('IchigoJam-1.4-Regular'),
+         url("https://cdn.jsdelivr.net/gh/fu-sen/ichigojam-font@20190814/IchigoJam-1.4.woff") format('woff');
+}
+a {
+    color: gray !important;
+}
+</style>
+
     <meta charset="utf-8">
     <title>Webプログラミング 道場</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.2.0/ace.js"></script>
@@ -10,6 +23,14 @@
 
         function エディタを作る(){
             g_editor = ace.edit("elmEditor");
+            g_editor.setOptions({
+                fontFamily: "ichigojam",
+                fontSize: "12px",
+                lineHeght: "20px",
+            });
+            g_editor.container.style.lineHeight = 1.4;
+            g_editor.renderer.updateFontSize();
+            g_editor.setTheme("ace/theme/monokai");
             g_editor.getSession().setMode("ace/mode/html");
         }
 
@@ -53,7 +74,7 @@
     </div>
     <div style="padding-top:15px; ">
         <div style="float:right; ">
-            v20211110 by <a href="https://github.com/code4fukui/htmlprac" target="_blank">Code for FUKUI</a>
+            v20211110 by <a href="https://github.com/code4fukui/htmlprac" target="_blank">Code for FUKUI</a> / font: <a href=https://15jamrecipe.jimdofree.com/%E3%83%84%E3%83%BC%E3%83%AB/%E3%83%95%E3%82%A9%E3%83%B3%E3%83%88-truetype/>IchigoJam FONT by Fu-sen</a>
         </div>
     </div>
 </body>
