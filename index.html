@@ -32,6 +32,13 @@ a {
             g_editor.renderer.updateFontSize();
             g_editor.setTheme("ace/theme/monokai");
             g_editor.getSession().setMode("ace/mode/html");
+
+            elmEditor.addEventListener("keyup", (e) => {
+                if (e.ctrlKey && e.key == "s") {
+                    見てみる();
+                    // elmPreview.focus();
+                }
+            });
         }
 
         function 見てみる(){
