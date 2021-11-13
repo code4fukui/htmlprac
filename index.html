@@ -13,9 +13,16 @@
             g_editor.getSession().setMode("ace/mode/html");
 
             elmEditor.addEventListener("keyup", (e) => {
-                if (e.ctrlKey && e.key == "s") {
+                if (e.key == "F5" || e.ctrlKey && e.key == "s") {
                     見てみる();
-                    // elmPreview.focus();
+                    e.preventDefault();
+                    return false;
+                }
+            });
+            elmEditor.addEventListener("keydown", (e) => {
+                if (e.key == "F5" || e.ctrlKey && e.key == "s") {
+                    e.preventDefault();
+                    return false;
                 }
             });
         }
