@@ -41,7 +41,7 @@
         }
 
         function シェアする(){
-            const code = encodeURIComponent(g_editor.getValue().replaceAll('script','scr.ES-Jam.ipt')).replaceAll('(','%28').replaceAll(')','%29');
+            const code = encodeURIComponent(g_editor.getValue().replaceAll('script','scr.ES-Jam.ipt')).replaceAll('(','%28').replaceAll(')','%29').replaceAll("'",'%27');
             navigator.clipboard.writeText(`${location.origin}${location.pathname}#${code}`);
             alert('シェア用URLをクリップボードにコピーしました');
         }
