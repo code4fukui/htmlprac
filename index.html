@@ -4,13 +4,15 @@
 <head>
     <meta charset="utf-8">
     <title>ES-Jam 〜Webプログラミング道場〜</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.2.0/ace.js"></script>
+    <script src="https://pagecdn.io/lib/ace/1.4.13/ace.min.js"></script>
     <script>
         let g_editor;
 
         function エディタを作る(){
+            ace.config.set('basePath', 'https://pagecdn.io/lib/ace/1.4.13/');
             g_editor = ace.edit("elmEditor");
             g_editor.getSession().setMode("ace/mode/html");
+            g_editor.setValue(decodeURIComponent(location.hash.substr(1)));
 
             elmEditor.addEventListener("keyup", (e) => {
                 if (e.ctrlKey && e.key == "s") {
@@ -37,6 +39,11 @@
             };
             f.readAsText(elmLoad.files[0]);
         }
+
+        function シェアする(){
+            navigator.clipboard.writeText(`${location.origin}${location.pathname}#${encodeURIComponent(g_editor.getValue())}`);
+            alert('シェア用URLをクリップボードにコピーしました');
+        }
     </script>
 </head>
 
@@ -46,6 +53,7 @@
             <button onclick="見てみる();" style="font-size:1.2em;">見てみる (^S)</button>
             <button onclick="SAVEする();" style="font-size:1.2em;">SAVEする<a id="elmSave"></a></button>
             <button onclick="elmLoad.click();" style="font-size:1.2em;">LOADする<input id="elmLoad" type="file" onchange="LOADする();" hidden></button>
+            <button onclick="シェアする();" title="シェアする" style="font-size:1.2em;">📤<a id="elmSave"></a></button>
         </div>
         <h1 style="font-size:1.5em;">
             ES-Jam <span style="font-size:66%;">〜Webプログラミング道場〜</span>
@@ -60,7 +68,7 @@
     </div>
     <div style="padding-top:15px; ">
         <div style="float:right; ">
-            v20211209 by <a href="https://github.com/code4fukui/htmlprac" target="_blank">Code for FUKUI</a>
+            v20220120 by <a href="https://github.com/code4fukui/htmlprac" target="_blank">Code for FUKUI</a>
         </div>
     </div>
 </body>
