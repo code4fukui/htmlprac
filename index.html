@@ -12,7 +12,7 @@
             ace.config.set('basePath', 'https://pagecdn.io/lib/ace/1.4.13/');
             g_editor = ace.edit("elmEditor");
             g_editor.getSession().setMode("ace/mode/html");
-            g_editor.setValue(decodeURIComponent(location.hash.substr(1)));
+            g_editor.setValue(decodeURIComponent(location.hash.substr(1)).replaceAll('scr.ES-Jam.ipt','script'));
 
             elmEditor.addEventListener("keyup", (e) => {
                 if (e.ctrlKey && e.key == "s") {
@@ -41,7 +41,8 @@
         }
 
         function シェアする(){
-            navigator.clipboard.writeText(`${location.origin}${location.pathname}#${encodeURIComponent(g_editor.getValue())}`);
+            const code = encodeURIComponent(g_editor.getValue().replaceAll('script','scr.ES-Jam.ipt')).replaceAll('(','%28').replaceAll(')','%29');
+            navigator.clipboard.writeText(`${location.origin}${location.pathname}#${code}`);
             alert('シェア用URLをクリップボードにコピーしました');
         }
     </script>
