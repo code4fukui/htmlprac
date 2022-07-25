@@ -32,7 +32,12 @@
         }
 
         function 見てみる(){
-            g_editor.setValue(toHalf(g_editor.getValue()));
+            const p1 = g_editor.getValue();
+            const p2 = toHalf(p1);
+            if (p1 != p2) {
+                g_editor.setValue(p2);
+                alert("全角文字を半角文字に置き換えました");
+            }
             elmPreview.src = URL.createObjectURL(new Blob([g_editor.getValue()], { type: "text/html" }));
         }
 
