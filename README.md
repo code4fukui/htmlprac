@@ -2,11 +2,11 @@
 
 ## how to use
 
-1. "[index.html](index.html)" をブラウザで開く。
+1. "[index.html](https://code4fukui.github.io/htmlprac/)" をブラウザで開く。
 
 ## license
 
 MIT
 
 ---
-v20211110
+v20220120
