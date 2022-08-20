@@ -36,7 +36,7 @@
             const p2 = toHalf(p1);
             if (p1 != p2) {
                 g_editor.setValue(p2);
-                alert("全角文字を半角文字に置き換えました");
+                //alert("全角文字を半角文字に置き換えました");
             }
             elmPreview.src = URL.createObjectURL(new Blob([g_editor.getValue()], { type: "text/html" }));
         }
