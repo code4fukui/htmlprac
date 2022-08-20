@@ -9,7 +9,7 @@
         let g_editor;
 
         async function エディタを作る() {
-            ace.config.set('basePath', 'https://pagecdn.io/lib/ace/1.4.13/');
+            ace.config.set("basePath", "https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.13/");
             g_editor = ace.edit("elmEditor");
             g_editor.getSession().setMode("ace/mode/html");
             
