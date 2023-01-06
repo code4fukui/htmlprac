@@ -12,6 +12,7 @@
             <button id=btnrun style="font-size:1.2em;">見てみる (^S)</button>
             <button id=btnsave style="font-size:1.2em;">SAVEする<a id="elmSave"></a></button>
             <button id=btnload style="font-size:1.2em;">LOADする<input id="elmLoad" type="file" hidden></button>
+            <button id=btnup style="font-size:1.2em;">UPする</button>
             <!--
                 <button id=btnshare title="シェアする" style="font-size:1.2em;">📤</button>
             -->
@@ -100,12 +101,19 @@
             navigator.clipboard.writeText(`${location.origin}${location.pathname}#${code}`);
             alert('シェア用URLをクリップボードにコピーしました');
         }
+        function UPする() {
+            const code = g_editor.getValue();
+            const url = "http://[::]:8000/api/"
+            fetchJSON(url, code);
+        }
         // init
         btnrun.onclick = () => 見てみる();
         elmLoad.onchange = () => LOADする();
         btnload.onclick = () => elmLoad.click();
         btnsave.onclick = () => SAVEする();
+        //btnup.onclick = () => UPする();
         //btnshare.onclick = () => シェアする();
+        btnup.onclick = () => 
         エディタを作る();
     </script>
 </body>
