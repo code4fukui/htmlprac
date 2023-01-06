@@ -36,6 +36,21 @@
     <script type="module">
         import { monaco } from "https://code4fukui.github.io/monaco-editor/monaco.js";
         import { ZenkakuAlpha } from "https://code4fukui.github.io/mojikiban/ZenkakuAlpha.js";
+        //import { fetchJSON } from "https://js.sabae.cc/fetchJSON.js";
+        const fetchText = async (url, req) => {
+            const opt = req ? {
+                method: "POST",
+                mode: "cors",
+                //mode: "no-cors",
+                cache: "no-cache",
+                //headers: { "Content-Type": "application/json" },
+                headers: { "Content-Type": "text/plain" },
+                body: JSON.stringify(req),
+                //body: encodeURIComponent(req),
+            } : null;
+            const res = await (await fetch(url, opt)).text();
+            return res;
+        };
 
         let g_editor;
 
@@ -101,20 +116,29 @@
             navigator.clipboard.writeText(`${location.origin}${location.pathname}#${code}`);
             alert('シェア用URLをクリップボードにコピーしました');
         }
-        function UPする() {
+        async function UPする() {
             const code = g_editor.getValue();
-            const url = "http://[::]:8000/api/"
-            fetchJSON(url, code);
+            const url = "https://ss.sabae.cc/"
+            const res = await fetchText(url + "api/", code);
+            if (isNaN(parseInt(res))) {
+                alert(res);
+            } else {
+                prompt("公開されたURL", url + res + ".html");
+            }
         }
         // init
         btnrun.onclick = () => 見てみる();
         elmLoad.onchange = () => LOADする();
         btnload.onclick = () => elmLoad.click();
         btnsave.onclick = () => SAVEする();
-        //btnup.onclick = () => UPする();
+        btnup.onclick = () => UPする();
         //btnshare.onclick = () => シェアする();
-        btnup.onclick = () => 
         エディタを作る();
+
+        const p1 = localstorage.getItem("program");
+        if (p1) {
+            g_editor.setValue(p1);
+        }
     </script>
 </body>
 
