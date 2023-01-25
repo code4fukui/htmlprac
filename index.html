@@ -93,6 +93,7 @@
                 g_editor.setValue(p2);
                 //alert("全角文字を半角文字に置き換えました");
             }
+            localStorage.setItem("program", g_editor.getValue());
             //g_editor.getAction("editor.action.formatDocument").run();
             elmPreview.src = URL.createObjectURL(new Blob([g_editor.getValue()], { type: "text/html" }));
         }
@@ -135,7 +136,7 @@
         //btnshare.onclick = () => シェアする();
         エディタを作る();
 
-        const p1 = localstorage.getItem("program");
+        const p1 = localStorage.getItem("program");
         if (p1) {
             g_editor.setValue(p1);
         }
