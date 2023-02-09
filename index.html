@@ -21,17 +21,17 @@
             ES-Jam <span style="font-size:66%;">〜Webプログラミング道場〜</span>
         </h1>
     </div>
-    <div style="height:calc(100vh - 7em);">
+    <div style="height:calc(100vh - 8em);">
         <div style="float:left; width:50%; height:100%;" id="elmEditor"></div>
         <div style="float:right; width:50%; height:100%;">
             <iframe id="elmPreview" style="width:100%; height:100%;" src="data:text/html;charset=utf-8;base64,5bem5YG0KOOCqOODh+OCo+OCvynjgatIVE1M44KS5pu444GE44Gm44CM6KaL44Gm44G/44KL44CN44Oc44K/44Oz44KS44CC"></iframe>
         </div>
     </div>
-    <div style="padding-top:15px; ">
-        <div style="float:right; ">
-            v20220821 by <a href="https://github.com/code4fukui/htmlprac" target="_blank">Code for FUKUI</a>
-        </div>
-        <div id=qrcontainer style="text-align: center">
+    <div style="">
+        <span id=qrcontainer style=""></span>
+        <span id=publishurl style="display: inline-block; padding-top: 15px; vertical-align: top;"></span>
+        <div style="float:right;padding-top:15px;">
+            v20230210 by <a href="https://github.com/code4fukui/htmlprac" target="_blank">Code for FUKUI</a>
         </div>
     </div>
 
@@ -78,13 +78,13 @@
                 prg += "\n";
             }
             //const n = (new URL(document.location.href)).searchParams.get("n");
-            const n = parseInt(document.location.search.substring(1));
+            const n = parseInt(document.location.hash.substring(1));
             if (!isNaN(n)) {
                 const url = "https://ss.sabae.cc/" + n + ".html";
                 prg += await (await fetch(url)).text();
                 prg += "\n";
             }
-            prg += decodeURIComponent(location.hash.substr(1)).replaceAll('scr.ES-Jam.ipt','script');
+            //prg += decodeURIComponent(location.hash.substr(1)).replaceAll('scr.ES-Jam.ipt','script');
             g_editor.setValue(prg);
 
             elmEditor.addEventListener("keyup", (e) => {
@@ -135,9 +135,12 @@
                 alert(res);
             } else {
                 const upurl = url + res + ".html";
-                prompt("公開されたURL", upurl);
+                //prompt("公開されたURL", upurl);
                 qrcontainer.innerHTML = "";
-                qrcontainer.appendChild(new QRCode(upurl));
+                qrcontainer.appendChild(new QRCode(upurl, 2));
+                location.hash = "#" + res;
+                //publishurl.innerHTML = `公開されたURL<br><a href=${upurl}>${upurl}</a>`;
+                publishurl.innerHTML = `<a href=${upurl}>${upurl}</a>`;
             }
             btnup.disabled = false;
         }
