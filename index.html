@@ -31,11 +31,14 @@
         <div style="float:right; ">
             v20220821 by <a href="https://github.com/code4fukui/htmlprac" target="_blank">Code for FUKUI</a>
         </div>
+        <div id=qrcontainer style="text-align: center">
+        </div>
     </div>
 
     <script type="module">
         import { monaco } from "https://code4fukui.github.io/monaco-editor/monaco.js";
         import { fixMyHTML } from "https://code4fukui.github.io/fixMyHTML/fixMyHTML.js";
+        import { QRCode } from "https://js.sabae.cc/QRCode.js";
         //import { fetchJSON } from "https://js.sabae.cc/fetchJSON.js";
         const fetchText = async (url, req) => {
             const opt = req ? {
@@ -124,14 +127,19 @@
             alert('シェア用URLをクリップボードにコピーしました');
         }
         async function UPする() {
+            btnup.disabled = true;
             const code = g_editor.getValue();
             const url = "https://ss.sabae.cc/"
             const res = await fetchText(url + "api/", code);
             if (isNaN(parseInt(res))) {
                 alert(res);
             } else {
-                prompt("公開されたURL", url + res + ".html");
+                const upurl = url + res + ".html";
+                prompt("公開されたURL", upurl);
+                qrcontainer.innerHTML = "";
+                qrcontainer.appendChild(new QRCode(upurl));
             }
+            btnup.disabled = false;
         }
         // init
         btnrun.onclick = () => 見てみる();
