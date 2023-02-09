@@ -35,7 +35,7 @@
 
     <script type="module">
         import { monaco } from "https://code4fukui.github.io/monaco-editor/monaco.js";
-        import { ZenkakuAlpha } from "https://code4fukui.github.io/mojikiban/ZenkakuAlpha.js";
+        import { fixMyHTML } from "https://code4fukui.github.io/fixMyHTML/fixMyHTML.js";
         //import { fetchJSON } from "https://js.sabae.cc/fetchJSON.js";
         const fetchText = async (url, req) => {
             const opt = req ? {
@@ -94,8 +94,7 @@
 
         function 見てみる() {
             const p1 = g_editor.getValue();
-            const p2 = ZenkakuAlpha.toHan(p1);
-            // const p2 = toHalf(p1);
+            const p2 = fixMyHTML(p1);
             if (p1 != p2) {
                 g_editor.setValue(p2);
                 //alert("全角文字を半角文字に置き換えました");
