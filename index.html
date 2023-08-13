@@ -55,6 +55,13 @@
             const res = await (await fetch(url, opt)).text();
             return res;
         };
+        const showUpURL = (upurl, no) => {
+            qrcontainer.innerHTML = "";
+            qrcontainer.appendChild(new QRCode(upurl, 2));
+            location.hash = "#" + no;
+            //publishurl.innerHTML = `公開されたURL<br><a href=${upurl}>${upurl}</a>`;
+            publishurl.innerHTML = `<a href=${upurl}>${upurl}</a>`;
+        };
 
         let g_editor;
 
@@ -84,6 +91,7 @@
                 const url = "https://ss.sabae.cc/" + n + ".html";
                 prg += await (await fetch(url)).text();
                 prg += "\n";
+                showUpURL(url, n);
             }
             //prg += decodeURIComponent(location.hash.substr(1)).replaceAll('scr.ES-Jam.ipt','script');
             g_editor.setValue(prg);
@@ -138,11 +146,7 @@
             } else {
                 const upurl = url + res + ".html";
                 //prompt("公開されたURL", upurl);
-                qrcontainer.innerHTML = "";
-                qrcontainer.appendChild(new QRCode(upurl, 2));
-                location.hash = "#" + res;
-                //publishurl.innerHTML = `公開されたURL<br><a href=${upurl}>${upurl}</a>`;
-                publishurl.innerHTML = `<a href=${upurl}>${upurl}</a>`;
+                showUpURL(upurl, res);
             }
             btnup.disabled = false;
         }
