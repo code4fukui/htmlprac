@@ -94,6 +94,12 @@
                 showUpURL(url, n);
             }
             //prg += decodeURIComponent(location.hash.substr(1)).replaceAll('scr.ES-Jam.ipt','script');
+            if (!prg) {
+                const p1 = localStorage.getItem("program");
+                if (p1) {
+                    prg = p1;
+                }
+            }
             g_editor.setValue(prg);
 
             elmEditor.addEventListener("keyup", (e) => {
@@ -102,6 +108,9 @@
                     // elmPreview.focus();
                 }
             });
+            if (prg) {
+                見てみる();
+            }
         }
 
         function 見てみる() {
@@ -158,11 +167,6 @@
         btnup.onclick = () => UPする();
         //btnshare.onclick = () => シェアする();
         エディタを作る();
-
-        const p1 = localStorage.getItem("program");
-        if (p1) {
-            g_editor.setValue(p1);
-        }
     </script>
 </body>
 
