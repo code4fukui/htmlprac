@@ -4,6 +4,13 @@
 <head>
     <meta charset="utf-8">
     <title>ES-Jam 〜Webプログラミング道場〜</title>
+    <style>
+    @media only screen and (max-width: 1050px) {
+        #subtitle {
+            display: none;
+        }
+    }
+    </style>
 </head>
 
 <body style="height:100vh;font-family:sans-serif;">
@@ -17,8 +24,9 @@
                 <button id=btnshare title="シェアする" style="font-size:1.2em;">📤</button>
             -->
         </div>
-        <h1 style="font-size:1.5em;">
-            ES-Jam <span style="font-size:66%;">〜Webプログラミング道場〜</span>
+        <h1 style="font-size:1.5em;white-space:nowrap;">
+            ES-Jam <span id=subtitle style="font-size:66%;">〜Webプログラミング道場〜</span>
+            <select style="margin-left:.5em;padding:.2em;" id="seltemplate"></select>
         </h1>
     </div>
     <div style="height:calc(100vh - 8em);">
@@ -171,6 +179,59 @@
         btnup.onclick = () => UPする();
         //btnshare.onclick = () => シェアする();
         エディタを作る();
+
+        // サポート
+        const script = "script";
+        const templates = {
+            "ウェブアプリ開発サポート": "",
+            "タイトル h1": "<h1>タイトル</h1>\n",
+            "テキスト": "テキスト\n",
+            "改行 br": "<br>\n",
+            "色付きテキスト font": "<font color=red>あかいもじ</font>\n",
+            "区切り線 hr": "<hr>\n",
+            "リンク a": "<a href=https://jig.jp/>jig.jp</a>\n",
+            "背景色 bgcolor": "<body bgcolor=green>\n",
+            "リンクの色 css": "<style>a { color: gray !important }</style>\n",
+            "JavaScript script": "<" + "script>\nalert(1 + 1);\n</" + "script>\n",
+            "ノベルゲーム テンプレ egadv": `<${script} type="module">
+import { bg, show } from "https://js.sabae.cc/egadv.js";
+await bg();
+await show("ここはどこだろう?");
+await show("福井かな?");
+</${script}>`,
+            "地図表示 for egadv": "await bg(“E9138732”);\n",
+            "ランダム福井県写真 for egadv": "await bg(“福井県”);\n",
+            "VRアプリ テンプレ egvr": `<${script} type="module">
+import * as eg from "https://js.sabae.cc/egvr.js";
+
+// x, y, z, size, color
+eg.sphere(0, 1, -2, 0.5, "red")
+eg.box(1, 1, -2, 0.5, "blue")
+eg.box(-1, 1, -2, 0.5, "yellow")
+</${script}>`,
+            "スマホ対応 viewport": `<meta name="viewport" content="width=device-width">`,
+        };
+        for (const name in templates) {
+            const op = document.createElement("option");
+            op.textContent = name;
+            op.value = templates[name];
+            seltemplate.appendChild(op);
+        }
+        g_editor.insertText = (text) => {
+            const selection = g_editor.getSelection();
+            const id = { major: 1, minor: 1 };             
+            const op = {identifier: id, range: selection, text, forceMoveMarkers: true};
+            g_editor.executeEdits("my-source", [op]);
+        };
+        seltemplate.oninput = (event) => {
+            const text = seltemplate.value;
+            if (text.startsWith("<meta ")) { // } || text.startsWith("<script")) {
+                g_editor.setValue(text + "\n" + g_editor.getValue());
+            } else {
+                g_editor.insertText(text);
+            }
+            seltemplate.value = "";
+        };
     </script>
 </body>
 
