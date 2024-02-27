@@ -88,10 +88,14 @@
             //const n = (new URL(document.location.href)).searchParams.get("n");
             const n = parseInt(document.location.hash.substring(1));
             if (!isNaN(n)) {
-                const url = "https://ss.sabae.cc/" + n + ".html";
-                prg += await (await fetch(url)).text();
-                prg += "\n";
-                showUpURL(url, n);
+                if (n) {
+                    const url = "https://ss.sabae.cc/" + n + ".html";
+                    prg += await (await fetch(url)).text();
+                    prg += "\n";
+                    showUpURL(url, n);
+                } else {
+                    prg = "\n";
+                }
             }
             //prg += decodeURIComponent(location.hash.substr(1)).replaceAll('scr.ES-Jam.ipt','script');
             if (!prg) {
