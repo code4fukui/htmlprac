@@ -1,13 +1,40 @@
-<!DOCTYPE html>
-<html>
-
-<head>
-    <meta charset="utf-8">
+<!DOCTYPE html><html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width"><link rel="icon" href="data:">
     <title>ES-Jam 〜Webプログラミング道場〜</title>
     <style>
+    #title {
+        font-size: 1.5em;
+        white-space: nowrap;
+        display: inline-block;
+        vertical-align: top;
+        margin: 0 0 .3em 0;
+    }
+    #menu {
+        margin-bottom: 0.3em;
+    }
     @media only screen and (max-width: 1050px) {
         #subtitle {
             display: none;
+        }
+    }
+    @media only screen and (max-width: 700px) {
+        body {
+            margin: 0 !important;
+        }
+        #elmEditor {
+            width: 100% !important;
+        }
+        #elmPreviewContainer {
+            display: none;
+            width: 100% !important;
+        }
+        #btnedit {
+            display: inline !important;
+        }
+        #main {
+            height: calc(100vh - 14em) !important;
+        }
+        #menu > button {
+            font-size: 0.7em !important;
         }
     }
     </style>
@@ -15,8 +42,13 @@
 
 <body style="height:100vh;font-family:sans-serif;">
     <div style="height:3em;">
-        <div style="float:right; ">
-            <button id=btnrun style="font-size:1.2em;">見てみる (^S)</button>
+        <h1 id="title">
+            ES-Jam <span id=subtitle style="font-size:66%;">〜Webプログラミング道場〜</span>
+            <select style="margin-left:.5em;padding:.2em;" id="seltemplate"></select>
+        </h1>
+        <div style="float:right;" id=menu>
+            <button id=btnedit style="display: none">編集</button>
+            <button id=btnrun style="font-size:1.2em;">見てみる</button>
             <button id=btnsave style="font-size:1.2em;">SAVEする<a id="elmSave"></a></button>
             <button id=btnload style="font-size:1.2em;">LOADする<input id="elmLoad" type="file" hidden></button>
             <button id=btnup style="font-size:1.2em;">UPする</button>
@@ -24,19 +56,15 @@
                 <button id=btnshare title="シェアする" style="font-size:1.2em;">📤</button>
             -->
         </div>
-        <h1 style="font-size:1.5em;white-space:nowrap;">
-            ES-Jam <span id=subtitle style="font-size:66%;">〜Webプログラミング道場〜</span>
-            <select style="margin-left:.5em;padding:.2em;" id="seltemplate"></select>
-        </h1>
     </div>
-    <div style="height:calc(100vh - 8em);">
+    <div style="height:calc(100vh - 8em);" id="main">
         <div style="float:left; width:50%; height:100%;" id="elmEditor"></div>
-        <div style="float:right; width:50%; height:100%;">
+        <div style="float:right; width:50%; height:100%;" id="elmPreviewContainer">
             <iframe id="elmPreview" style="width:100%; height:100%;" src="data:text/html;charset=utf-8;base64,5bem5YG0KOOCqOODh+OCo+OCvynjgatIVE1M44KS5pu444GE44Gm44CM6KaL44Gm44G/44KL44CN44Oc44K/44Oz44KS44CC"></iframe>
         </div>
     </div>
     <div style="">
-        <span id=qrcontainer style=""></span>
+        <span id=qrcontainer style="display: inline-block; margin-top: 5px;"></span>
         <span id=publishurl style="display: inline-block; padding-top: 15px; vertical-align: top;"></span>
         <div style="float:right;padding-top:15px;">
             v20230210 by <a href="https://github.com/code4fukui/htmlprac" target="_blank">Code for FUKUI</a>
@@ -172,7 +200,21 @@
             btnup.disabled = false;
         }
         // init
-        btnrun.onclick = () => 見てみる();
+        btnrun.onclick = () => {
+            console.log(getComputedStyle(btnedit).display);
+            if (getComputedStyle(btnedit).display == "inline-block") {
+                elmPreviewContainer.style.display = "block";
+                elmEditor.style.display = "none";
+            }
+            見てみる();
+        };
+        btnedit.onclick = () => {
+            console.log(getComputedStyle(btnedit).display);
+            if (getComputedStyle(btnedit).display == "inline-block") {
+                elmPreviewContainer.style.display = "none";
+                elmEditor.style.display = "block";
+            }
+        };
         elmLoad.onchange = () => LOADする();
         btnload.onclick = () => elmLoad.click();
         btnsave.onclick = () => SAVEする();
