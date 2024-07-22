@@ -76,7 +76,8 @@
         //import { fixMyHTML } from "https://code4fukui.github.io/fixMyHTML/fixMyHTML.js";
         import { ZenkakuAlpha } from "https://code4fukui.github.io/mojikiban/ZenkakuAlpha.js";
         import { QRCode } from "https://js.sabae.cc/QRCode.js";
-        //import { fetchJSON } from "https://js.sabae.cc/fetchJSON.js";
+        import { fetchJSON } from "https://js.sabae.cc/fetchJSON.js";
+        
         const fetchText = async (url, req) => {
             const opt = req ? {
                 method: "POST",
@@ -98,6 +99,31 @@
             //publishurl.innerHTML = `公開されたURL<br><a href=${upurl}>${upurl}</a>`;
             publishurl.innerHTML = `<a href=${upurl}>${upurl}</a>`;
         };
+        const extractHTML = (s) => {
+            const n = s.indexOf("```html\n");
+            if (n < 0) return s;
+            const m = s.indexOf("\n```\n", n + 8);
+            if (m < 0) return s;
+            const s2 = s.substring(n + 8, m);
+            return s2;
+        };
+
+
+const fetchWebApp = async (title) => {
+  const messages = [
+    { role: "user", content: title + "をHTML1ファイルでつくって" },
+  ];
+  console.log(messages);
+  const res = await fetchJSON("https://aichat.sabae.cc/api/conversation", messages);
+    console.log(res);
+  const html = extractHTML(res);
+  console.log(html);
+  if (html == res) return "ごめんなさい!つくれませんでした!ちょっと変えてリトライしてみてください";
+  return html;
+};
+
+//await fetchWebApp("かんたんなゲーム");
+
 
         let g_editor;
 
@@ -160,6 +186,10 @@
             if (p1 != p2) {
                 g_editor.setValue(p2);
                 //alert("全角文字を半角文字に置き換えました");
+            }
+            const p3 = extractHTML(p2);
+            if (p3 != p2) {
+                g_editor.setValue(p3);
             }
             localStorage.setItem("program", g_editor.getValue());
             //g_editor.getAction("editor.action.formatDocument").run();
@@ -226,6 +256,7 @@
         const script = "script";
         const templates = {
             "ウェブアプリ開発サポート": "",
+            "新規作成": "\n",
             "タイトル h1": "<h1>タイトル</h1>\n",
             "テキスト": "テキスト\n",
             "改行 br": "<br>\n",
@@ -241,8 +272,14 @@ await bg();
 await show("ここはどこだろう?");
 await show("福井かな?");
 </${script}>`,
-            "地図表示 for egadv": "await bg(“E9138732”);\n",
-            "ランダム福井県写真 for egadv": "await bg(“福井県”);\n",
+            "地図表示 テンプレ egadv": `<${script} type="module">
+import { bg, show } from "https://js.sabae.cc/egadv.js";
+await bg("E913");
+await show("地図の表示");
+await show("移動、拡大縮小できます");
+await show("左下の Geo3x3 をクリック、値をコピーして、bg関数のパラメータに設定するとその場所が表示されます");
+</${script}>`,
+            //"ランダム福井県写真 for egadv": "await bg(“福井県”);\n",
             "VRアプリ テンプレ egvr": `<${script} type="module">
 import * as eg from "https://js.sabae.cc/egvr.js";
 
@@ -252,6 +289,7 @@ eg.box(1, 1, -2, 0.5, "blue")
 eg.box(-1, 1, -2, 0.5, "yellow")
 </${script}>`,
             "スマホ対応 viewport": `<meta name="viewport" content="width=device-width">`,
+            "AIにおねがい": "AIにおねがい",
         };
         for (const name in templates) {
             const op = document.createElement("option");
@@ -265,10 +303,26 @@ eg.box(-1, 1, -2, 0.5, "yellow")
             const op = {identifier: id, range: selection, text, forceMoveMarkers: true};
             g_editor.executeEdits("my-source", [op]);
         };
-        seltemplate.oninput = (event) => {
+        seltemplate.oninput = async (event) => {
             const text = seltemplate.value;
-            if (text.startsWith("<meta ")) { // } || text.startsWith("<script")) {
+            if (text.startsWith("<meta ")) {
                 g_editor.setValue(text + "\n" + g_editor.getValue());
+            } else if (text == "\n") {
+                if (confirm("今のプログラムを消して最初からつくりますか？")) {
+                    g_editor.setValue("");
+                }
+            } if (text.startsWith("<script")) {
+                if (confirm("今のプログラムを消してつくりますか？")) {
+                    g_editor.setValue(text);
+                }
+            } else if (text == "AIにおねがい") {
+                const title = prompt("AIにどんなアプリをつくってもらう？");
+                if (title) {
+                    g_editor.setValue("ちょっとまってね・・・");
+                    const res = await fetchWebApp(title);
+                    console.log(res);
+                    g_editor.setValue(res);
+                }
             } else {
                 g_editor.insertText(text);
             }
