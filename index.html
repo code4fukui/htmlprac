@@ -109,21 +109,14 @@
         };
 
 
-const fetchWebApp = async (title) => {
-  const messages = [
-    { role: "user", content: title + "をHTML1ファイルでつくって" },
-  ];
-  console.log(messages);
-  const res = await fetchJSON("https://aichat.sabae.cc/api/conversation", messages);
-    console.log(res);
-  const html = extractHTML(res);
-  console.log(html);
-  if (html == res) return "ごめんなさい!つくれませんでした!ちょっと変えてリトライしてみてください";
-  return html;
-};
-
-//await fetchWebApp("かんたんなゲーム");
-
+        const fetchWebApp = async (title) => {
+            const prompt = title + "をHTML1ファイルでつくって";
+            const messages = [{ role: "user", content: prompt }];
+            const res = await fetchJSON("https://aichat.sabae.cc/api/conversation", messages);
+            const html = "<!-- " + prompt + " by OpenAI API -->\n" + extractHTML(res);
+            if (html == res) return "ごめんなさい!つくれませんでした!ちょっと変えてリトライしてみてください";
+            return html;
+        };
 
         let g_editor;
 
@@ -318,7 +311,7 @@ eg.box(-1, 1, -2, 0.5, "yellow")
             } else if (text == "AIにおねがい") {
                 const title = prompt("AIにどんなアプリをつくってもらう？");
                 if (title) {
-                    g_editor.setValue("ちょっとまってね・・・");
+                    g_editor.setValue("AIに「" + title + "」の作成をおねがい中・・・");
                     const res = await fetchWebApp(title);
                     console.log(res);
                     g_editor.setValue(res);
