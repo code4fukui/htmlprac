@@ -67,7 +67,7 @@
         <span id=qrcontainer style="display: inline-block; margin-top: 5px;"></span>
         <span id=publishurl style="display: inline-block; padding-top: 15px; vertical-align: top;"></span>
         <div style="float:right;padding-top:15px;">
-            v20230210 by <a href="https://github.com/code4fukui/htmlprac" target="_blank">Code for FUKUI</a>
+            v20250127 by <a href="https://github.com/code4fukui/htmlprac" target="_blank">Code for FUKUI</a>
         </div>
     </div>
 
@@ -261,6 +261,8 @@
             "DNCL3": `<${script} type="module" src="https://code4fukui.github.io/DNCL3/web.js"></${script}>
 <${script} type="text/dncl">
 print "こんにちは!"
+
+# DNCL3言語仕様はこちら https://github.com/code4fukui/DNCL3/blob/main/README_ja.md
 </${script}>`,
             "DNCL3 ノベルゲーム テンプレ": `<${script} type="module" src="https://code4fukui.github.io/DNCL3/web.js"></${script}>
 <${script} type="text/dncl">
@@ -270,7 +272,23 @@ bg()
 show("ここはどこだろう?")
 show("福井かな？")
 </${script}>`,
-            "JavaScript script": "<" + "script>\nalert(1 + 1);\n</" + "script>\n",
+            "Wirth（ヴィルト）": `<${script} type="module" src="https://code4fukui.github.io/Wirth/web.js"></${script}>
+<${script} type="text/wirth">
+print "こんにちは!"
+
+# Wirth言語仕様はこちら https://github.com/code4fukui/Wirth/blob/main/README_ja.md
+</${script}>`,
+            "Wirth ノベルゲーム テンプレ": `<${script} type="module" src="https://code4fukui.github.io/Wirth/web.js"></${script}>
+<${script} type="text/wirth">
+function bg, show from "https://js.sabae.cc/egadv.js"
+
+bg()
+show("ここはどこだろう?")
+if show("福井かな？", "はい", "いいえ") = "はい"
+  show("正解？")
+endif
+</${script}>`,
+            "JavaScript": "<" + "script>\nalert(1 + 1);\n</" + "script>\n",
             "ノベルゲーム テンプレ egadv": `<${script} type="module">
 import { bg, show } from "https://js.sabae.cc/egadv.js";
 await bg();
