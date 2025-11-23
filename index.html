@@ -67,6 +67,7 @@
         <span id=qrcontainer style="display: inline-block; margin-top: 5px;"></span>
         <span id=publishurl style="display: inline-block; padding-top: 15px; vertical-align: top;"></span>
         <div style="float:right;padding-top:15px;">
+            <input id=g_pass placeholder="上書き用パスコード" style="display: inline-block; margin-right: 1em">
             v20250127 by <a href="https://github.com/code4fukui/htmlprac" target="_blank">Code for FUKUI</a>
         </div>
     </div>
@@ -78,6 +79,9 @@
         import { QRCode } from "https://js.sabae.cc/QRCode.js";
         import { fetchJSON } from "https://js.sabae.cc/fetchJSON.js";
         
+        //const baseurl = "https://ss.sabae.cc/";
+        const baseurl = "http://localhost:8000/";
+
         const fetchText = async (url, req) => {
             const opt = req ? {
                 method: "POST",
@@ -92,12 +96,19 @@
             const res = await (await fetch(url, opt)).text();
             return res;
         };
+        let bkidx = null;
         const showUpURL = (upurl, no) => {
             qrcontainer.innerHTML = "";
-            qrcontainer.appendChild(new QRCode(upurl, 2));
-            location.hash = "#" + no;
-            //publishurl.innerHTML = `公開されたURL<br><a href=${upurl}>${upurl}</a>`;
-            publishurl.innerHTML = `<a href=${upurl}>${upurl}</a>`;
+            if (upurl) {
+                qrcontainer.appendChild(new QRCode(upurl, 2));
+                location.hash = "#" + no;
+                //publishurl.innerHTML = `公開されたURL<br><a href=${upurl}>${upurl}</a>`;
+                publishurl.innerHTML = `<a href=${upurl}>${upurl}</a>`;
+            } else {
+                location.hash = "#";
+                publishurl.innerHTML = "";
+            }
+            bkidx = no;
         };
         const extractHTML = (s) => {
             const n = s.indexOf("```html\n");
@@ -144,7 +155,7 @@
             const n = parseInt(document.location.hash.substring(1));
             if (!isNaN(n)) {
                 if (n) {
-                    const url = "https://ss.sabae.cc/" + n + ".html";
+                    const url = baseurl + n + ".html";
                     prg += await (await fetch(url)).text();
                     prg += "\n";
                     showUpURL(url, n);
@@ -211,9 +222,21 @@
         async function UPする() {
             btnup.disabled = true;
             const code = g_editor.getValue();
-            const url = "https://ss.sabae.cc/"
-            const res = await fetchText(url + "api/", code);
+            const idx = bkidx ? bkidx : 0;
+            const pass = g_pass.value;
+            const param = {
+                html: code,
+                pass,
+                idx,
+            }
+            const url = baseurl;
+            const res = await fetchText(url + "api/save", param);
             if (isNaN(parseInt(res))) {
+                if (res == "\"err: pass not match\"") {
+                    bkidx = null;
+                    await UPする();
+                    return;
+                }
                 alert(res);
             } else {
                 const upurl = url + res + ".html";
@@ -221,6 +244,9 @@
                 showUpURL(upurl, res);
             }
             btnup.disabled = false;
+            if (pass && !code) {
+                alert("削除しました");
+            }
         }
         // init
         btnrun.onclick = () => {
@@ -331,6 +357,7 @@ eg.box(-1, 1, -2, 0.5, "yellow")
             } else if (text == "\n") {
                 if (confirm("今のプログラムを消して最初からつくりますか？")) {
                     g_editor.setValue("");
+                    showUpURL();
                 }
             } if (text.startsWith("<script")) {
                 if (confirm("今のプログラムを消してつくりますか？")) {
