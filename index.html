@@ -67,7 +67,7 @@
         <span id=qrcontainer style="display: inline-block; margin-top: 5px;"></span>
         <span id=publishurl style="display: inline-block; padding-top: 15px; vertical-align: top;"></span>
         <div style="float:right;padding-top:15px;">
-            <input id=g_pass placeholder="上書き用パスコード" style="display: inline-block; margin-right: 1em">
+            <input id=g_pass type="password" placeholder="上書き用パスコード" style="display: inline-block; margin-right: 1em">
             v20250127 by <a href="https://github.com/code4fukui/htmlprac" target="_blank">Code for FUKUI</a>
         </div>
     </div>
@@ -80,7 +80,7 @@
         import { fetchJSON } from "https://js.sabae.cc/fetchJSON.js";
         
         const baseurl = "https://ss.sabae.cc/";
-        //const baseurl = "http://localhost:8000/";
+        //const baseurl = "http://localhost:8010/";
 
         const fetchText = async (url, req) => {
             const opt = req ? {
@@ -222,8 +222,8 @@
         async function UPする() {
             btnup.disabled = true;
             const code = g_editor.getValue();
-            const idx = bkidx ? bkidx : 0;
             const pass = g_pass.value;
+            const idx = bkidx && pass.length > 0 ? bkidx : 0;
             const param = {
                 html: code,
                 pass,
@@ -231,6 +231,7 @@
             }
             const url = baseurl;
             const res = await fetchText(url + "api/save", param);
+            console.log(res, url, param)
             if (isNaN(parseInt(res))) {
                 if (res == "\"err: pass not match\"") {
                     bkidx = null;
@@ -375,6 +376,11 @@ eg.box(-1, 1, -2, 0.5, "yellow")
                 g_editor.insertText(text);
             }
             seltemplate.value = "";
+        };
+
+        g_pass.value = localStorage.getItem("esjam_password") || "";
+        g_pass.onchange = () => {
+            localStorage.setItem("esjam_password", g_pass.value);
         };
     </script>
 </body>
