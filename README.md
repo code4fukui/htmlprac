@@ -1,5 +1,8 @@
 # htmlprac
-Web programming dojo.
+
+> 日本語のREADMEはこちらです: [README.ja.md](README.ja.md)
+
+A web programming dojo.
 
 ## Demo
 You can access the demo at [https://code4fukui.github.io/htmlprac/](https://code4fukui.github.io/htmlprac/).
