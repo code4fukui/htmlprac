@@ -1,14 +1,14 @@
 # Webプログラミング 道場
 
-Webプログラミングの学習ができるブラウザベースのエディタ環境です。
+Webプログラミングを学習できるブラウザベースのエディタ環境です。
 
 ## デモ
-[https://code4fukui.github.io/htmlprac/](https://code4fukui.github.io/htmlprac/) にアクセスすることで、デモを確認できます。
+[https://code4fukui.github.io/htmlprac/](https://code4fukui.github.io/htmlprac/) で確認できます。
 
 ## 機能
-- コードエディタによるHTMLの編集
+- HTML エディタによるコード編集
 - 即時プレビュー
-- コードの保存/読み込み
+- HTMLファイルの保存と読み込み
 
 ## 使い方
 1. [https://code4fukui.github.io/htmlprac/](https://code4fukui.github.io/htmlprac/) をブラウザで開きます。

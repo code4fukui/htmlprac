@@ -17,4 +17,4 @@ You can access the demo at [https://code4fukui.github.io/htmlprac/](https://code
 2. Use the buttons to run, save, and load your HTML code.
 
 ## License
-MIT
+MIT License — see [LICENSE](LICENSE).
