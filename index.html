@@ -1,112 +1,319 @@
 <!DOCTYPE html>
-<html>
-
+<html lang="ja">
 <head>
-    <meta charset="utf-8">
-    <title>ES-Jam 〜Webプログラミング道場〜</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>ES-Jam 〜Webプログラミング道場〜</title>
+  <style>
+    html, body {
+      height: 100%;
+      margin: 0;
+    }
+    body {
+      display: flex;
+      flex-direction: column;
+      font-family: sans-serif;
+      overflow: hidden;
+    }
+    header {
+      flex: 0 0 auto;
+      padding: 0.6rem 0.8rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      border-bottom: 1px solid #ccc;
+      box-sizing: border-box;
+    }
+    h1 {
+      margin: 0;
+      font-size: 1.35rem;
+      line-height: 1.2;
+    }
+    h1 span {
+      font-size: 66%;
+      font-weight: normal;
+    }
+    .actions {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+    button {
+      font-size: 1rem;
+      padding: 0.45rem 0.8rem;
+      cursor: pointer;
+    }
+    main {
+      flex: 1 1 auto;
+      min-height: 0;
+      display: flex;
+    }
+    #elmEditor {
+      width: 50%;
+      height: 100%;
+      min-width: 320px;
+    }
+    #previewWrap {
+      width: 50%;
+      height: 100%;
+      border-left: 1px solid #ccc;
+      box-sizing: border-box;
+    }
+    #elmPreview {
+      width: 100%;
+      height: 100%;
+      border: 0;
+      display: block;
+      background: white;
+    }
+    footer {
+      flex: 0 0 auto;
+      padding: 0.5rem 0.8rem;
+      border-top: 1px solid #eee;
+      font-size: 0.9rem;
+      display: flex;
+      justify-content: space-between;
+      gap: 1rem;
+      box-sizing: border-box;
+    }
+    #status {
+      color: #555;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    #elmLoad {
+      display: none;
+    }
+  </style>
 </head>
 
-<body style="height:100vh;">
-    <div style="height:3em;">
-        <div style="float:right; ">
-            <button id=btnrun style="font-size:1.2em;">見てみる (^S)</button>
-            <button id=btnsave style="font-size:1.2em;">SAVEする<a id="elmSave"></a></button>
-            <button id=btnload style="font-size:1.2em;">LOADする<input id="elmLoad" type="file" hidden></button>
-            <!--
-                <button id=btnshare title="シェアする" style="font-size:1.2em;">📤</button>
-            -->
-        </div>
-        <h1 style="font-size:1.5em;">
-            ES-Jam <span style="font-size:66%;">〜Webプログラミング道場〜</span>
-        </h1>
+<body>
+  <header>
+    <h1>ES-Jam <span>〜Webプログラミング道場〜</span></h1>
+    <div class="actions">
+      <button id="btnrun" type="button">見てみる (^S)</button>
+      <button id="btnsave" type="button">SAVEする</button>
+      <input id="elmSave" type="hidden" />
+      <button id="btnload" type="button">LOADする</button>
+      <input id="elmLoad" type="file" accept=".html,text/html" />
     </div>
-    <div style="height:calc(100vh - 7em);">
-        <div style="float:left; width:50%; height:100%;" id="elmEditor"></div>
-        <div style="float:right; width:50%; height:100%;">
-            <iframe id="elmPreview" style="width:100%; height:100%;" src="data:text/html;charset=utf-8;base64,5bem5YG0KOOCqOODh+OCo+OCvynjgatIVE1M44KS5pu444GE44Gm44CM6KaL44Gm44G/44KL44CN44Oc44K/44Oz44KS44CC"></iframe>
-        </div>
+  </header>
+
+  <main>
+    <div id="elmEditor"></div>
+    <div id="previewWrap">
+      <iframe
+        id="elmPreview"
+        sandbox="allow-scripts"
+        referrerpolicy="no-referrer"
+        title="Preview"
+      ></iframe>
     </div>
-    <div style="padding-top:15px; ">
-        <div style="float:right; ">
-            v20220821 by <a href="https://github.com/code4fukui/htmlprac" target="_blank">Code for FUKUI</a>
-        </div>
-    </div>
+  </main>
 
-    <script type="module">
-        import { monaco } from "https://code4fukui.github.io/monaco-editor/monaco.js";
-        import { fixMyHTML } from "https://code4fukui.github.io/fixMyHTML/fixMyHTML.js";
+  <footer>
+    <div id="status">準備中…</div>
+    <div>v20260811 by Code for FUKUI</div>
+  </footer>
 
-        let g_editor;
+  <script type="module">
+    import { monaco } from "https://code4fukui.github.io/monaco-editor/monaco.js";
+    import { fixMyHTML } from "https://code4fukui.github.io/fixMyHTML/fixMyHTML.js";
 
-        async function エディタを作る() {
-            g_editor = monaco.editor.create(elmEditor, {
-                language: "html",
-                //autoIndent: true,
-                autoIndent: "none",
-                //formatOnPaste: true,
-                //formatOnType: true,
-                tabSize: 2,
-                minimap: { enabled: false },
-                //overflow: "auto",
-                automaticLayout: true,
-                theme: "vs-dark",
-            });
+    const STORAGE_KEY = "es-jam:last-html";
+    let g_editor;
+    let currentPreviewURL = "";
+    let saveTimer = null;
 
-            let prg = "";
-            const url = (new URL(document.location.href)).searchParams.get("url");
-            if (url) {
-                prg += await (await fetch(url)).text();
-                prg += "\n";
-            }
-            prg += decodeURIComponent(location.hash.substr(1)).replaceAll('scr.ES-Jam.ipt','script');
-            g_editor.setValue(prg);
+    const statusEl = document.getElementById("status");
+    const previewEl = document.getElementById("elmPreview");
+    const loadEl = document.getElementById("elmLoad");
+    const saveEl = document.getElementById("elmSave");
 
-            elmEditor.addEventListener("keyup", (e) => {
-                if (e.ctrlKey && e.key == "s") {
-                    見てみる();
-                    // elmPreview.focus();
-                }
-            });
-        }
+    function setStatus(msg) {
+      statusEl.textContent = msg;
+    }
 
-        function 見てみる() {
-            const p1 = g_editor.getValue();
-            const p2 = fixMyHTML(p1);
-            if (p1 != p2) {
-                g_editor.setValue(p2);
-                //alert("全角文字を半角文字に置き換えました");
-            }
-            //g_editor.getAction("editor.action.formatDocument").run();
-            elmPreview.src = URL.createObjectURL(new Blob([g_editor.getValue()], { type: "text/html" }));
-        }
+    function getInitialProgram() {
+      const params = new URL(document.location.href).searchParams;
+      const url = params.get("url");
+      const hashCode = decodeURIComponent(location.hash.slice(1)).replaceAll("scr.ES-Jam.ipt", "script");
 
-        function SAVEする() {
-            elmSave.download = `WebDOJO.${Date.now()}.html`;
-            elmSave.href = URL.createObjectURL(new Blob([g_editor.getValue()], { type: "application/octet-stream" }));
-            elmSave.click();
-        }
+      return { url, hashCode };
+    }
 
-        function LOADする() {
-            const f = new FileReader();
-            f.onload = () => {
-                g_editor.setValue(f.result);
-            };
-            f.readAsText(elmLoad.files[0]);
-        }
-
-        function シェアする() {
-            const code = encodeURIComponent(g_editor.getValue().replaceAll('script','scr.ES-Jam.ipt')).replaceAll('(','%28').replaceAll(')','%29').replaceAll("'",'%27');
-            navigator.clipboard.writeText(`${location.origin}${location.pathname}#${code}`);
-            alert('シェア用URLをクリップボードにコピーしました');
-        }
-        // init
-        btnrun.onclick = () => 見てみる();
-        elmLoad.onchange = () => LOADする();
-        btnload.onclick = () => elmLoad.click();
-        btnsave.onclick = () => SAVEする();
-        //btnshare.onclick = () => シェアする();
-        エディタを作る();
-    </script>
+    function defaultHTML() {
+      return `<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Preview</title>
+  <style>
+    body { font-family: sans-serif; padding: 2rem; line-height: 1.7; }
+    .box { padding: 1rem; border: 1px solid #ccc; border-radius: 12px; }
+  </style>
+</head>
+<body>
+  <div class="box">
+    <h2>Hello, ES-Jam!</h2>
+    <p>ここにHTMLを書いて「見てみる」を押す。</p>
+  </div>
 </body>
+</html>`;
+    }
 
+    function loadFromStorage() {
+      try {
+        return localStorage.getItem(STORAGE_KEY) || "";
+      } catch {
+        return "";
+      }
+    }
+
+    function saveToStorage(code) {
+      try {
+        localStorage.setItem(STORAGE_KEY, code);
+      } catch {
+        // 失敗しても黙る。ブラウザはたまに気分屋。
+      }
+    }
+
+    function scheduleAutoSave() {
+      clearTimeout(saveTimer);
+      saveTimer = setTimeout(() => {
+        if (!g_editor) return;
+        saveToStorage(g_editor.getValue());
+        setStatus("自動保存しました");
+      }, 400);
+    }
+
+    function revokeCurrentPreviewURL() {
+      if (currentPreviewURL) {
+        URL.revokeObjectURL(currentPreviewURL);
+        currentPreviewURL = "";
+      }
+    }
+
+    function renderPreview(code) {
+      revokeCurrentPreviewURL();
+      const blob = new Blob([code], { type: "text/html;charset=utf-8" });
+      currentPreviewURL = URL.createObjectURL(blob);
+      previewEl.src = currentPreviewURL;
+    }
+
+    async function エディタを作る() {
+      g_editor = monaco.editor.create(document.getElementById("elmEditor"), {
+        language: "html",
+        autoIndent: "none",
+        tabSize: 2,
+        minimap: { enabled: false },
+        automaticLayout: true,
+        theme: "vs-dark",
+        wordWrap: "on",
+        fontSize: 14,
+        scrollBeyondLastLine: false,
+      });
+
+      const { url, hashCode } = getInitialProgram();
+
+      let prg = "";
+      try {
+        if (url) {
+          setStatus(`読み込み中: ${url}`);
+          prg = await (await fetch(url)).text();
+        } else if (hashCode) {
+          prg = hashCode;
+        } else {
+          prg = loadFromStorage() || defaultHTML();
+        }
+      } catch (e) {
+        prg = loadFromStorage() || defaultHTML();
+        setStatus("URLの読み込みに失敗したので、保存済み内容を開きました");
+      }
+
+      g_editor.setValue(prg);
+
+      g_editor.onDidChangeModelContent(() => {
+        scheduleAutoSave();
+      });
+
+      g_editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyS, () => {
+        見てみる();
+      });
+
+      setStatus("準備完了");
+    }
+
+    function 見てみる() {
+      try {
+        const p1 = g_editor.getValue();
+        const p2 = fixMyHTML(p1);
+        if (p1 !== p2) {
+          g_editor.setValue(p2);
+        }
+        const code = g_editor.getValue();
+        renderPreview(code);
+        saveToStorage(code);
+        setStatus("プレビュー更新");
+      } catch (e) {
+        setStatus(`プレビュー失敗: ${e?.message ?? e}`);
+      }
+    }
+
+    function SAVEする() {
+      const code = g_editor.getValue();
+      const a = document.createElement("a");
+      a.download = `WebDOJO.${Date.now()}.html`;
+      a.href = URL.createObjectURL(new Blob([code], { type: "text/html;charset=utf-8" }));
+      a.click();
+      setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+      setStatus("HTMLを保存しました");
+    }
+
+    async function LOADする() {
+      const file = loadEl.files?.[0];
+      if (!file) {
+        setStatus("読み込むファイルが選ばれていません");
+        return;
+      }
+      try {
+        const text = await file.text();
+        g_editor.setValue(text);
+        saveToStorage(text);
+        setStatus(`読み込みました: ${file.name}`);
+      } catch (e) {
+        setStatus(`読み込み失敗: ${e?.message ?? e}`);
+      } finally {
+        loadEl.value = "";
+      }
+    }
+
+    async function シェアする() {
+      const code = encodeURIComponent(
+        g_editor.getValue().replaceAll("script", "scr.ES-Jam.ipt")
+      ).replaceAll("(", "%28").replaceAll(")", "%29").replaceAll("'", "%27");
+
+      const shareURL = `${location.origin}${location.pathname}#${code}`;
+
+      try {
+        await navigator.clipboard.writeText(shareURL);
+        setStatus("シェア用URLをコピーしました");
+      } catch {
+        prompt("シェア用URL", shareURL);
+        setStatus("コピーできなかったのでURLを表示しました");
+      }
+    }
+
+    document.getElementById("btnrun").onclick = () => 見てみる();
+    document.getElementById("btnsave").onclick = () => SAVEする();
+    document.getElementById("btnload").onclick = () => loadEl.click();
+    loadEl.onchange = () => LOADする();
+
+    await エディタを作る();
+  </script>
+</body>
 </html>
